@@ -1,0 +1,28 @@
+{
+  "name": "tatehama_trainradio_discordbot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daidoji-traincrew-office/tatehama_trainradio_discordbot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/daidoji-traincrew-office/tatehama_trainradio_discordbot/issues"
+  },
+  "homepage": "https://github.com/daidoji-traincrew-office/tatehama_trainradio_discordbot#readme",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "discord.js": "^14.21.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

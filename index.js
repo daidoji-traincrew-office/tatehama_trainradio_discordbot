@@ -24,20 +24,22 @@ app.get('/login', (req, res) => {
 
   const redirect = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent("https://train-radio.tatehama.jp/auth/discord/callback")}&response_type=code&scope=identify%20guilds&code_challenge=${codeChallenge}&code_challenge_method=S256`;
 
+  console.log("🔗 リダイレクトURL:", redirect);
   res.redirect(redirect);
+  console.log("🔗 リダイレクトURL:", redirect);
 });
 
 // コールバック処理
 app.get('/auth/discord/callback', async (req, res) => {
-  const codeChallengeFromCode = req.query.code; // actually this is 'code', not code_challenge
-  const codeVerifier = CODE_CHALLENGE_MAP.get(codeChallengeFromCode);
+  const codeFromDiscord = req.query.code;
+  const codeVerifier = CODE_CHALLENGE_MAP.get(codeFromDiscord);
 
   if (!codeVerifier) {
     console.error("❌ code_verifier が見つかりませんでした。CODE_CHALLENGE_MAP:", [...CODE_CHALLENGE_MAP.entries()]);
     return res.status(400).send("code_verifier が見つかりませんでした。");
   }
 
-  if (!codeChallengeFromCode) {
+  if (!codeFromDiscord) {
     return res.status(400).send("認証コードが見つかりませんでした。");
   }
 
@@ -48,7 +50,7 @@ app.get('/auth/discord/callback', async (req, res) => {
         client_id: process.env.DISCORD_CLIENT_ID,
         client_secret: process.env.DISCORD_CLIENT_SECRET,
         grant_type: 'authorization_code',
-        code: codeChallengeFromCode,
+        code: codeFromDiscord,
         redirect_uri: 'https://train-radio.tatehama.jp/auth/discord/callback',
         code_verifier: codeVerifier,
       }),
@@ -99,6 +101,6 @@ client.once('ready', () => {
 });
 client.login(process.env.DISCORD_BOT_TOKEN);
 
-app.listen(3000, () => {
-  console.log('🚀 認証サーバーが http://localhost:3000 で起動中');
+app.listen(5000, () => {
+  console.log('🚀 認証サーバーが http://localhost:5000 で起動中');
 });

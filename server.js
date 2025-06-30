@@ -44,20 +44,32 @@ app.get('/auth/discord/callback', async (req, res) => {
 
     // 3. Bot権限で、ユーザーが指定サーバーに参加しているか確認
     try {
-      await axios.get(
+      // ★★★ メンバー情報を取得し、ニックネームを抽出 ★★★
+      const memberResponse = await axios.get(
         `https://discord.com/api/guilds/${REQUIRED_GUILD_ID}/members/${discordUser.id}`,
         { headers: { 'Authorization': `Bot ${DISCORD_BOT_TOKEN}` } }
       );
-      
+      // ユーザーのサーバー内でのニックネームを取得 (設定されていなければ null)
+      const guildNickname = memberResponse.data.nick;
+
+      // サーバー名も取得 (これは以前と同じ)
+      const guildResponse = await axios.get(
+        `https://discord.com/api/guilds/${REQUIRED_GUILD_ID}`,
+        { headers: { 'Authorization': `Bot ${DISCORD_BOT_TOKEN}` } }
+      );
+      const guildName = guildResponse.data.name;
+
       // 4. サーバーに参加していたら、アプリ用のJWTを生成
       const appToken = jwt.sign(
         { 
           userId: discordUser.id, 
-          username: discordUser.username,
-          avatar: discordUser.avatar // ★ ここにアバター情報を追加しました
+          username: discordUser.username, // グローバルなユーザー名
+          guildNickname: guildNickname,   // ★ サーバー内でのニックネームを追加
+          avatar: discordUser.avatar,
+          guildName: guildName 
         },
         JWT_SECRET,
-        { expiresIn: '7d' } // トークンの有効期限（例: 7日間）
+        { expiresIn: '7d' } 
       );
 
       // 5. JWTを付けてFlutterアプリにリダイレクト
@@ -71,7 +83,7 @@ app.get('/auth/discord/callback', async (req, res) => {
   } catch (error) {
     // その他の認証エラー
     console.error('Auth Error:', error.response ? error.response.data : error.message);
-    res.redirect(`${APP_CALLBACK_SCHEME}://auth-failure?error=auth_failed`);
+    res.redirect(`${APP_CALLBACK_SCHEME}ようこそauth-failure?error=auth_failed`);
   }
 });
 

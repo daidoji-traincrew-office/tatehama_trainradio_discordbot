@@ -51,7 +51,11 @@ app.get('/auth/discord/callback', async (req, res) => {
       
       // 4. サーバーに参加していたら、アプリ用のJWTを生成
       const appToken = jwt.sign(
-        { userId: discordUser.id, username: discordUser.username },
+        { 
+          userId: discordUser.id, 
+          username: discordUser.username,
+          avatar: discordUser.avatar // ★ ここにアバター情報を追加しました
+        },
         JWT_SECRET,
         { expiresIn: '7d' } // トークンの有効期限（例: 7日間）
       );

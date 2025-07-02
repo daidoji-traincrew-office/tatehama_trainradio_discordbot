@@ -80,12 +80,11 @@ app.get('/auth/discord/callback', async (req, res) => {
 //================================================================
 // 2. PCアプリ (C#)用：認証コードを受け取り、JWTを返すAPIエンドポイント
 //================================================================
-// ★★★ app.post から app.all に変更し、GETリクエストも受け付けるように修正 ★★★
 app.all('/api/pc-auth', async (req, res) => {
     console.log(`[PC Auth] Received a ${req.method} request to /api/pc-auth`);
 
-    // ★★★ GETとPOSTの両方から 'code' を取得しようと試みる ★★★
-    const code = req.body.code || req.query.code;
+    // ★★★ 'code' の取得方法をより安全な形に修正しました ★★★
+    const code = (req.body && req.body.code) ? req.body.code : req.query.code;
     
     if (!code) {
         return res.status(400).json({ success: false, message: 'Authorization code is required.' });
